@@ -1,0 +1,46 @@
+A couple of handy features to enhance Kernel#autoload.
+
+
+Features
+========
+
+ * Fire Kernel#autoload at an entire directory
+ * Fire it again at a subdirectory, for namespace'd models
+
+
+Motivation/Examples
+===================
+
+I was using Ramaze as a web framework, and discovered that the standard Ramaze way of loading a directory of files is to slurp them all (with 'acquire'). I decided I'd rather use autoload, and not load things I'm not using. But I wasn't really looking forward to this:
+
+autoload :User, 'model/user'
+autoload :Clan, 'model/clan'
+autoload :Item, 'model/item'
+
+...ad nauseum. So, the first feature is a shallow, directory-based autoload:
+
+AutoLoader << 'model'
+
+Of course, being a pedant, I like to namespace my models. I don't want to slurp the entire directory tree. Instead, you can do this:
+
+class User < MyFavoriteORM::Model
+  include AutoLoader
+  ...
+end
+
+Now, all AutoLoaded paths will be searched for a subdirectory called 'user', and all files within will be autoloaded. Just as if you'd done:
+
+User.autoload :Anonymous, 'model/user/anonymous'
+User.autoload :Registered, 'model/user/registered'
+
+Of course, there's no requirement that you have a base class, or anything of the sort. If you just want a namespace, you can always do:
+
+module MyNamespace; include AutoLoader; end
+
+And you're done.
+
+
+Compatibility
+=============
+
+Currently, Merb's extlib and Rails' activesupport are supported. It should be trivial to interface with other libraries.
